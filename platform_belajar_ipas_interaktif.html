@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Belajar IPAS Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutrals with Educational Accents (Slate, Blue, Emerald, Amber) -->
+    <!-- Application Structure Plan: The SPA uses a dashboard-like tabbed interface. This non-linear structure allows users to jump directly to the subject they want to study (Biologi, Kimia, Fisika, Bumi, Sosial). This reduces cognitive load compared to reading a long scrolling document. Interactive elements like toggles, hover cards, and clickable layers are used to chunk information, making complex concepts (like Earth's layers or chemical changes) easier to digest and explore actively. -->
+    <!-- Visualization & Content Choices: 
+         - Klasifikasi/Sosial -> Goal: Organize -> Grid Cards (HTML/Tailwind) -> Interaction: Hover effects for engagement -> Justification: Breaks down dense text into readable chunks.
+         - Besaran SI -> Goal: Inform -> Data Table (HTML) -> Interaction: Hover highlight -> Justification: Standard way to present structured tabular data clearly.
+         - Struktur Bumi -> Goal: Organize/Explore -> Stacked HTML divs -> Interaction: Click to reveal details -> Justification: Mimics the physical layers, making the abstract concept tangible without SVG.
+         - Atmosfer -> Goal: Compare -> Bar Chart (Chart.js) -> Interaction: Tooltips -> Justification: Visually compares the height/thickness of different atmospheric layers, adding a quantitative visual to the text.
+         - Perubahan Zat -> Goal: Categorize -> Interactive Toggle Buttons -> Interaction: Click to filter examples -> Justification: Tests user understanding actively rather than just listing examples. 
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn.active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .layer-btn.active { transform: scale(1.02); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-left: 4px solid #fff; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 50vh;
+            max-height: 400px;
+        }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased overflow-x-hidden">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="text-3xl">🌍</span> IPAS Explorer
+            </h1>
+            <nav class="mt-4 md:mt-0 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                <ul class="flex space-x-6 whitespace-nowrap px-2">
+                    <li><button onclick="switchTab('A')" class="tab-btn active pb-2 text-slate-500 hover:text-blue-600 transition-colors" data-tab="A">Makhluk Hidup</button></li>
+                    <li><button onclick="switchTab('B')" class="tab-btn pb-2 text-slate-500 hover:text-blue-600 transition-colors" data-tab="B">Zat & Perubahan</button></li>
+                    <li><button onclick="switchTab('C')" class="tab-btn pb-2 text-slate-500 hover:text-blue-600 transition-colors" data-tab="C">Energi</button></li>
+                    <li><button onclick="switchTab('D')" class="tab-btn pb-2 text-slate-500 hover:text-blue-600 transition-colors" data-tab="D">Bumi & Antariksa</button></li>
+                    <li><button onclick="switchTab('E')" class="tab-btn pb-2 text-slate-500 hover:text-blue-600 transition-colors" data-tab="E">Sosial & Dinamika</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- SECTION A: Makhluk Hidup -->
+        <section id="sec-A" class="content-section fade-in">
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg mb-8 shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-2">Makhluk Hidup dan Lingkungannya</h2>
+                <p class="text-blue-800 leading-relaxed">
+                    Bagian ini mengajak Anda menjelajahi keanekaragaman hayati melalui sistem klasifikasi 5 Kingdom, memahami bagaimana komponen biotik dan abiotik berinteraksi membentuk ekosistem yang seimbang, serta membedakan konsep pertumbuhan dan perkembangan pada makhluk hidup. Berinteraksilah dengan kartu-kartu di bawah ini untuk melihat detail masing-masing klasifikasi.
+                </p>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4 border-b pb-2">1. Sistem Klasifikasi 5 Kingdom (Whittaker)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div class="text-4xl mb-3">🦠</div>
+                    <h4 class="font-bold text-lg group-hover:text-blue-600">Monera</h4>
+                    <p class="text-sm text-slate-600 mt-2">Uniseluler, prokariotik (tanpa membran inti).<br><br><strong>Contoh:</strong> Bakteri (E. coli), Alga biru-hijau.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div class="text-4xl mb-3">🧫</div>
+                    <h4 class="font-bold text-lg group-hover:text-blue-600">Protista</h4>
+                    <p class="text-sm text-slate-600 mt-2">Eukariotik sederhana, uniseluler/multiseluler.<br><br><strong>Contoh:</strong> Amoeba, Paramecium, Ganggang.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div class="text-4xl mb-3">🍄</div>
+                    <h4 class="font-bold text-lg group-hover:text-blue-600">Fungi (Jamur)</h4>
+                    <p class="text-sm text-slate-600 mt-2">Eukariotik, heterotrof, dinding sel kitin.<br><br><strong>Contoh:</strong> Jamur tiram, Saccharomyces.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div class="text-4xl mb-3">🌿</div>
+                    <h4 class="font-bold text-lg group-hover:text-blue-600">Plantae (Tumbuhan)</h4>
+                    <p class="text-sm text-slate-600 mt-2">Multiseluler, autotrof (fotosintesis), dinding sel selulosa.<br><br><strong>Contoh:</strong> Lumut, Paku, Tumbuhan berbiji.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+                    <div class="text-4xl mb-3">🐅</div>
+                    <h4 class="font-bold text-lg group-hover:text-blue-600">Animalia (Hewan)</h4>
+                    <p class="text-sm text-slate-600 mt-2">Multiseluler, heterotrof, bergerak aktif.<br><br><strong>Contoh:</strong> Invertebrata & Vertebrata.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">2. Interaksi dalam Ekosistem</h3>
+                    <div class="bg-white rounded-lg border border-slate-200 p-5">
+                        <h4 class="font-semibold text-slate-700 mb-3">Model Rantai Makanan:</h4>
+                        <div class="flex flex-wrap items-center gap-2 text-sm md:text-base font-medium text-slate-600 bg-slate-50 p-4 rounded-md">
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded">Padi</span> 
+                            <span class="text-slate-400">➔</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded">Belalang</span>
+                            <span class="text-slate-400">➔</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded">Katak</span>
+                            <span class="text-slate-400">➔</span>
+                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded">Ular</span>
+                            <span class="text-slate-400">➔</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded">Elang</span>
+                        </div>
+                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                            <li><strong>Simbiosis Mutualisme:</strong> Saling untung (Burung jalak & Kerbau).</li>
+                            <li><strong>Simbiosis Komensalisme:</strong> Satu untung, satu netral (Anggrek & Mangga).</li>
+                            <li><strong>Simbiosis Parasitisme:</strong> Satu untung, satu rugi (Benalu & Inang).</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">3. Pertumbuhan vs Perkembangan</h3>
+                    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="p-3 border-b">Karakteristik</th>
+                                    <th class="p-3 border-b text-blue-700">Pertumbuhan</th>
+                                    <th class="p-3 border-b text-emerald-700">Perkembangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Sifat</td>
+                                    <td class="p-3">Kuantitatif (dapat diukur angka)</td>
+                                    <td class="p-3">Kualitatif (tidak bisa diukur angka)</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Proses</td>
+                                    <td class="p-3">Pertambahan ukuran, massa, tinggi</td>
+                                    <td class="p-3">Pematangan fungsi organ (kedewasaan)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Contoh</td>
+                                    <td class="p-3">Tinggi anak bertambah dari 120cm ke 140cm</td>
+                                    <td class="p-3">Perubahan suara, munculnya bunga</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION B: Zat & Perubahan -->
+        <section id="sec-B" class="content-section hidden fade-in">
+            <div class="bg-emerald-50 border-l-4 border-emerald-500 p-6 rounded-r-lg mb-8 shadow-sm">
+                <h2 class="text-2xl font-bold text-emerald-900 mb-2">Zat dan Perubahannya</h2>
+                <p class="text-emerald-800 leading-relaxed">
+                    Di seksi ini, kita mengkaji materi fisik alam semesta. Mulai dari pengukuran besaran pokok standar internasional, membedakan unsur, senyawa, dan campuran, hingga menganalisis perubahan fisika dan kimia. Gunakan fitur filter di bawah ini untuk menguji pemahaman Anda tentang jenis perubahan zat.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">1. Besaran Pokok (Sistem Internasional)</h3>
+                    <div class="bg-white shadow-sm border border-slate-200 rounded-lg overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-emerald-600 text-white">
+                                <tr>
+                                    <th class="p-3">Besaran Pokok</th>
+                                    <th class="p-3">Satuan SI</th>
+                                    <th class="p-3">Alat Ukur</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Panjang</td><td class="p-3">meter (m)</td><td class="p-3">Penggaris, Jangka Sorong</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Massa</td><td class="p-3">kilogram (kg)</td><td class="p-3">Neraca Ohaus</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Waktu</td><td class="p-3">sekon (s)</td><td class="p-3">Stopwatch</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Suhu</td><td class="p-3">Kelvin (K)</td><td class="p-3">Termometer</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-medium">Kuat Arus</td><td class="p-3">Ampere (A)</td><td class="p-3">Amperemeter</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">2. Eksplorasi Perubahan Zat</h3>
+                    <p class="text-sm text-slate-600 mb-4">Pilih kategori untuk melihat contoh peristiwa yang terjadi dalam kehidupan sehari-hari.</p>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="filterZat('fisika')" id="btn-fisika" class="px-4 py-2 bg-emerald-100 text-emerald-800 rounded font-medium hover:bg-emerald-200 transition-colors">Perubahan Fisika</button>
+                        <button onclick="filterZat('kimia')" id="btn-kimia" class="px-4 py-2 bg-slate-100 text-slate-600 rounded font-medium hover:bg-slate-200 transition-colors">Perubahan Kimia</button>
+                    </div>
+                    
+                    <div id="zat-content" class="bg-white p-5 rounded-lg border border-slate-200 min-h-[150px]">
+                        <h4 class="font-bold text-emerald-700 mb-2">Ciri-ciri:</h4>
+                        <p class="text-sm text-slate-600 mb-3">Hanya mengubah bentuk fisik atau wujud, tanpa zat baru.</p>
+                        <h4 class="font-bold text-emerald-700 mb-2">Contoh:</h4>
+                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                            <li>Air membeku menjadi es</li>
+                            <li>Lilin meleleh</li>
+                            <li>Beras ditumbuk menjadi tepung</li>
+                            <li>Pembuatan garam dari air laut (kristalisasi)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4 border-b pb-2">3. Metode Pemisahan Campuran</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">☕</div>
+                    <div class="font-bold text-sm">Filtrasi</div>
+                    <div class="text-xs text-slate-500 mt-1">Penyaringan beda ukuran (Ampas kopi)</div>
+                </div>
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">☀️</div>
+                    <div class="font-bold text-sm">Evaporasi</div>
+                    <div class="text-xs text-slate-500 mt-1">Penguapan pelarut (Pembuatan garam)</div>
+                </div>
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">⚗️</div>
+                    <div class="font-bold text-sm">Distilasi</div>
+                    <div class="text-xs text-slate-500 mt-1">Beda titik didih (Penyulingan minyak)</div>
+                </div>
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">🌈</div>
+                    <div class="font-bold text-sm">Kromatografi</div>
+                    <div class="text-xs text-slate-500 mt-1">Beda rambat (Pemisahan warna tinta)</div>
+                </div>
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">🧊</div>
+                    <div class="font-bold text-sm">Sublimasi</div>
+                    <div class="text-xs text-slate-500 mt-1">Padat ke gas (Pemurnian kapur barus)</div>
+                </div>
+                <div class="p-4 bg-white border rounded-lg text-center shadow-sm">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <div class="font-bold text-sm">Sentrifugasi</div>
+                    <div class="text-xs text-slate-500 mt-1">Putaran cepat (Pemisahan plasma darah)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION C: Energi -->
+        <section id="sec-C" class="content-section hidden fade-in">
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg mb-8 shadow-sm">
+                <h2 class="text-2xl font-bold text-amber-900 mb-2">Energi dan Perubahannya</h2>
+                <p class="text-amber-800 leading-relaxed">
+                    Energi bersifat kekal, tidak dapat diciptakan atau dimusnahkan, namun terus bertransformasi. Bagian ini menjelaskan konsep matematis usaha dan energi mekanik, serta membedakan sumber energi masa depan (terbarukan) dan sumber energi fosil (tak terbarukan).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Rumus Kunci Fisika</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded border">
+                            <span class="block text-sm font-semibold text-slate-500 mb-1">Usaha (W)</span>
+                            <code class="text-lg text-amber-600 font-mono block">W = F × s</code>
+                            <span class="text-xs text-slate-400">F: Gaya (N), s: Perpindahan (m). Satuan: Joule.</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded border">
+                            <span class="block text-sm font-semibold text-slate-500 mb-1">Energi Kinetik (Ek)</span>
+                            <code class="text-lg text-amber-600 font-mono block">Ek = ½ m v²</code>
+                            <span class="text-xs text-slate-400">m: Massa (kg), v: Kecepatan (m/s).</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded border">
+                            <span class="block text-sm font-semibold text-slate-500 mb-1">Energi Potensial (Ep)</span>
+                            <code class="text-lg text-amber-600 font-mono block">Ep = m × g × h</code>
+                            <span class="text-xs text-slate-400">g: Gravitasi, h: Ketinggian (m).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Contoh Transformasi Energi</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl">♨️</div>
+                            <div>
+                                <p class="text-sm font-bold">Listrik ➔ Kalor (Panas)</p>
+                                <p class="text-xs text-slate-500">Setrika listrik, dispenser, oven</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">🔋</div>
+                            <div>
+                                <p class="text-sm font-bold">Kimia ➔ Listrik</p>
+                                <p class="text-xs text-slate-500">Baterai ponsel, Aki mobil</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xl">⚙️</div>
+                            <div>
+                                <p class="text-sm font-bold">Listrik ➔ Mekanik (Gerak)</p>
+                                <p class="text-xs text-slate-500">Kipas angin, mesin cuci, blender</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl">🍃</div>
+                            <div>
+                                <p class="text-sm font-bold">Cahaya ➔ Kimia</p>
+                                <p class="text-xs text-slate-500">Fotosintesis pada tumbuhan</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 border rounded-xl shadow-sm">
+                <h3 class="font-bold text-lg mb-4 text-slate-800 text-center">Sumber Energi: Terbarukan vs Tak Terbarukan</h3>
+                <div class="flex flex-col md:flex-row justify-center gap-6 text-sm">
+                    <div class="flex-1 bg-green-50 p-4 rounded text-green-900 border border-green-200">
+                        <h4 class="font-bold mb-2 flex items-center gap-2"><span class="text-xl">♻️</span> Terbarukan</h4>
+                        <p class="mb-2 text-xs">Melimpah, tidak akan habis, ramah lingkungan.</p>
+                        <ul class="list-disc pl-4 text-xs font-medium">
+                            <li>Surya (Matahari)</li><li>Angin</li><li>Air (Hidroelektrik)</li><li>Panas Bumi (Geothermal)</li><li>Biomassa</li>
+                        </ul>
+                    </div>
+                    <div class="flex-1 bg-slate-100 p-4 rounded text-slate-800 border border-slate-300">
+                        <h4 class="font-bold mb-2 flex items-center gap-2"><span class="text-xl">🛢️</span> Tak Terbarukan</h4>
+                        <p class="mb-2 text-xs">Terbentuk jutaan tahun, jumlah terbatas.</p>
+                        <ul class="list-disc pl-4 text-xs font-medium">
+                            <li>Batu Bara</li><li>Minyak Bumi</li><li>Gas Alam</li><li>Nuklir (Uranium)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION D: Bumi & Antariksa -->
+        <section id="sec-D" class="content-section hidden fade-in">
+            <div class="bg-teal-50 border-l-4 border-teal-500 p-6 rounded-r-lg mb-8 shadow-sm">
+                <h2 class="text-2xl font-bold text-teal-900 mb-2">Bumi dan Antariksa</h2>
+                <p class="text-teal-800 leading-relaxed">
+                    Jelajahi struktur internal planet kita, lapisan pelindung atmosfer yang menyelimutinya, serta pahami langkah-langkah mitigasi penting untuk menghadapi berbagai bencana alam seperti gempa bumi dan tsunami. Klik pada lapisan bumi untuk melihat karakteristiknya.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                <!-- Interactive Earth Layers -->
+                <div class="bg-white border rounded-xl shadow-sm p-6">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Struktur Internal Bumi</h3>
+                    <div class="flex gap-4">
+                        <div class="w-1/3 flex flex-col gap-1 relative">
+                            <!-- Layers represented as stacked colored boxes -->
+                            <button onclick="showEarthLayer('kerak')" id="btn-layer-kerak" class="layer-btn active h-12 bg-slate-400 rounded transition-all text-white font-bold text-xs">Kerak</button>
+                            <button onclick="showEarthLayer('mantel')" id="btn-layer-mantel" class="layer-btn h-24 bg-orange-500 rounded transition-all text-white font-bold text-xs">Mantel</button>
+                            <button onclick="showEarthLayer('luar')" id="btn-layer-luar" class="layer-btn h-16 bg-red-600 rounded transition-all text-white font-bold text-xs">Inti Luar</button>
+                            <button onclick="showEarthLayer('dalam')" id="btn-layer-dalam" class="layer-btn h-12 bg-yellow-400 rounded transition-all text-slate-900 font-bold text-xs">Inti Dalam</button>
+                        </div>
+                        <div class="w-2/3 bg-slate-50 p-4 rounded border" id="layer-details">
+                            <h4 class="font-bold text-teal-700 mb-2">Kerak Bumi (Crust)</h4>
+                            <p class="text-sm text-slate-600">Lapisan terluar bumi yang tipis, dingin, dan kaku. Tebalnya berkisar antara 5 - 70 km. Terdiri dari Kerak Benua (granit) dan Kerak Samudra (basal yang lebih padat). Tempat kita hidup.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mitigasi Bencana -->
+                <div class="bg-white border rounded-xl shadow-sm p-6">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Mitigasi Bencana Alam</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="border-l-2 border-red-400 pl-3">
+                            <strong class="text-red-700 block">Gempa Bumi</strong>
+                            <span class="text-slate-600">Konstruksi tahan gempa, keluar ke ruang terbuka, berlindung di bawah meja kokoh jika terjebak, jauhi kaca/tebing.</span>
+                        </div>
+                        <div class="border-l-2 border-blue-400 pl-3">
+                            <strong class="text-blue-700 block">Tsunami</strong>
+                            <span class="text-slate-600">Kenali tanda (air laut surut drastis pasca gempa), evakuasi segera ke tempat tinggi/bukit, pelihara hutan mangrove.</span>
+                        </div>
+                        <div class="border-l-2 border-orange-400 pl-3">
+                            <strong class="text-orange-700 block">Erupsi Gunung Berapi</strong>
+                            <span class="text-slate-600">Patuhi peta KRB, pantau status PVMBG, gunakan masker pelindung debu, ikuti rute evakuasi resmi.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atmosphere Chart Container -->
+            <div class="bg-white border rounded-xl shadow-sm p-6">
+                <h3 class="font-bold text-lg mb-2 text-slate-800 text-center">Lapisan Atmosfer Bumi (Perkiraan Ketinggian)</h3>
+                <p class="text-center text-xs text-slate-500 mb-4">Grafik ini membandingkan rentang ketinggian berbagai lapisan selubung gas bumi.</p>
+                <!-- REQUIRED: Chart container to manage size and responsiveness -->
+                <div class="chart-container w-full max-w-2xl mx-auto h-[400px]">
+                    <canvas id="atmosphereChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION E: Sosial & Dinamika -->
+        <section id="sec-E" class="content-section hidden fade-in">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-lg mb-8 shadow-sm">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2">Aspek Sosial & Dinamika Masyarakat</h2>
+                <p class="text-indigo-800 leading-relaxed">
+                    Manusia adalah makhluk sosial dan ekonomi. Di bagian ini, kita mengeksplorasi bagaimana konektivitas antarruang memicu perdagangan, syarat terjadinya interaksi sosial, serta fondasi kegiatan ekonomi yang menggerakkan kesejahteraan masyarakat.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Interaksi Keruangan -->
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Syarat Interaksi Keruangan</h3>
+                    <p class="text-sm text-slate-600 mb-4">Hubungan timbal balik antar wilayah terjadi karena perbedaan potensi SDA. Syaratnya:</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2 text-sm">
+                            <span class="text-indigo-500 mt-0.5">❶</span>
+                            <div>
+                                <strong class="text-slate-700 block">Saling Melengkapi (Complementarity)</strong>
+                                <span class="text-slate-500 text-xs">Surplus produk berbeda (Misal: Pegunungan sayur, pesisir ikan).</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2 text-sm">
+                            <span class="text-indigo-500 mt-0.5">❷</span>
+                            <div>
+                                <strong class="text-slate-700 block">Kesempatan Antara (Intervening Opportunity)</strong>
+                                <span class="text-slate-500 text-xs">Alternatif lokasi lebih dekat/murah.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2 text-sm">
+                            <span class="text-indigo-500 mt-0.5">❸</span>
+                            <div>
+                                <strong class="text-slate-700 block">Kemudahan Transfer (Transferability)</strong>
+                                <span class="text-slate-500 text-xs">Akses infrastruktur (jalan/transportasi) yang memadai.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Interaksi Sosial -->
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Bentuk Interaksi Sosial</h3>
+                    <div class="mb-4">
+                        <span class="inline-block bg-slate-100 text-xs font-bold px-2 py-1 rounded text-slate-600 mb-2">Syarat: Kontak Sosial & Komunikasi</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-indigo-50 p-3 rounded border border-indigo-100">
+                            <strong class="text-indigo-700 text-sm block mb-1">Asosiatif (Persatuan)</strong>
+                            <ul class="text-xs text-slate-600 list-disc pl-3">
+                                <li>Kooperasi (Kerja sama)</li>
+                                <li>Akomodasi (Penyelesaian)</li>
+                                <li>Asimilasi & Akulturasi</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-100">
+                            <strong class="text-red-700 text-sm block mb-1">Disosiatif (Perpecahan)</strong>
+                            <ul class="text-xs text-slate-600 list-disc pl-3">
+                                <li>Kompetisi (Persaingan)</li>
+                                <li>Kontravensi (Tidak suka)</li>
+                                <li>Konflik (Pertikaian)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kegiatan Ekonomi -->
+            <div class="bg-white p-6 border rounded-xl shadow-sm text-center">
+                <h3 class="font-bold text-lg mb-6 text-slate-800">Alur Kegiatan Ekonomi Utama</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                    <div class="w-full md:w-1/3 p-4 bg-slate-50 rounded-lg border relative">
+                        <div class="text-3xl mb-2">🏭</div>
+                        <h4 class="font-bold text-slate-700">Produksi</h4>
+                        <p class="text-xs text-slate-500 mt-1">Menghasilkan/menambah nilai guna barang. (Produsen)</p>
+                    </div>
+                    <div class="hidden md:block text-slate-300 text-2xl">➔</div>
+                    <div class="text-slate-300 text-2xl md:hidden">⬇</div>
+                    <div class="w-full md:w-1/3 p-4 bg-slate-50 rounded-lg border relative">
+                        <div class="text-3xl mb-2">🚚</div>
+                        <h4 class="font-bold text-slate-700">Distribusi</h4>
+                        <p class="text-xs text-slate-500 mt-1">Menyalurkan barang agar merata. (Distributor)</p>
+                    </div>
+                    <div class="hidden md:block text-slate-300 text-2xl">➔</div>
+                    <div class="text-slate-300 text-2xl md:hidden">⬇</div>
+                    <div class="w-full md:w-1/3 p-4 bg-slate-50 rounded-lg border relative">
+                        <div class="text-3xl mb-2">🛍️</div>
+                        <h4 class="font-bold text-slate-700">Konsumsi</h4>
+                        <p class="text-xs text-slate-500 mt-1">Menghabiskan nilai guna untuk kebutuhan. (Konsumen)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Navigation Logic
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            // Remove active state from all tabs
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'text-blue-600', 'font-600');
+                el.classList.add('text-slate-500');
+                el.style.borderBottom = "none";
+            });
+            
+            // Show selected section
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            
+            // Set active state on clicked tab
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            activeBtn.classList.add('active', 'text-blue-600');
+            activeBtn.classList.remove('text-slate-500');
+            activeBtn.style.borderBottom = "4px solid #2563eb";
+
+            // Initialize chart if tab D is selected and chart hasn't been drawn
+            if(tabId === 'D' && !window.chartInitialized) {
+                initAtmosphereChart();
+                window.chartInitialized = true;
+            }
+        }
+
+        // Filter Logic for Perubahan Zat
+        const zatData = {
+            fisika: {
+                ciri: "Hanya mengubah bentuk fisik atau wujud, tanpa menghasilkan zat baru. Rumus kimia tetap.",
+                contoh: ["Air membeku menjadi es", "Lilin meleleh", "Beras ditumbuk menjadi tepung beras", "Pembuatan garam dari air laut (kristalisasi)"]
+            },
+            kimia: {
+                ciri: "Menghasilkan zat baru dengan sifat kimia berbeda. Ditandai gas, endapan, perubahan warna/suhu.",
+                contoh: ["Kertas dibakar menjadi abu", "Besi berkarat (Korosi)", "Pembuatan tape dari singkong (Fermentasi)", "Nasi yang membusuk"]
+            }
+        };
+
+        function filterZat(type) {
+            // Update buttons
+            document.getElementById('btn-fisika').className = type === 'fisika' ? 
+                'px-4 py-2 bg-emerald-100 text-emerald-800 rounded font-medium transition-colors' : 
+                'px-4 py-2 bg-slate-100 text-slate-600 rounded font-medium hover:bg-slate-200 transition-colors';
+            
+            document.getElementById('btn-kimia').className = type === 'kimia' ? 
+                'px-4 py-2 bg-emerald-100 text-emerald-800 rounded font-medium transition-colors' : 
+                'px-4 py-2 bg-slate-100 text-slate-600 rounded font-medium hover:bg-slate-200 transition-colors';
+
+            // Update content
+            const content = document.getElementById('zat-content');
+            const data = zatData[type];
+            let listHtml = data.contoh.map(item => `<li>${item}</li>`).join('');
+            
+            content.innerHTML = `
+                <div class="fade-in">
+                    <h4 class="font-bold text-emerald-700 mb-2">Ciri-ciri:</h4>
+                    <p class="text-sm text-slate-600 mb-3">${data.ciri}</p>
+                    <h4 class="font-bold text-emerald-700 mb-2">Contoh:</h4>
+                    <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                        ${listHtml}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Earth Layers Interactive Logic
+        const earthData = {
+            kerak: {
+                title: "Kerak Bumi (Crust)",
+                desc: "Lapisan terluar bumi yang tipis, dingin, dan kaku. Tebalnya berkisar antara 5 - 70 km. Terdiri dari Kerak Benua (granit) dan Kerak Samudra (basal yang lebih padat). Tempat kita hidup."
+            },
+            mantel: {
+                title: "Mantel Bumi (Mantle)",
+                desc: "Lapisan di bawah kerak bumi yang menyusun sekitar 80% volume bumi. Suhunya tinggi dan sebagian materialnya berupa silikat semi-cair yang bergerak secara konveksi (memicu gempa tektonik)."
+            },
+            luar: {
+                title: "Inti Bumi Luar (Outer Core)",
+                desc: "Lapisan logam cair yang sangat panas (didominasi besi dan nikel). Perputaran cairan logam ini menghasilkan medan magnet bumi yang melindungi dari radiasi luar angkasa."
+            },
+            dalam: {
+                title: "Inti Bumi Dalam (Inner Core)",
+                desc: "Pusat bumi yang berbentuk bola padat logam besi-nikel. Meskipun bersuhu luar biasa panas (5000°C), ia tetap padat karena tekanan yang teramat sangat tinggi di pusat bumi."
+            }
+        };
+
+        function showEarthLayer(layer) {
+            // Update buttons styling
+            document.querySelectorAll('.layer-btn').forEach(btn => {
+                btn.style.transform = 'scale(1)';
+                btn.style.boxShadow = 'none';
+                btn.style.borderLeft = 'none';
+            });
+            
+            const activeBtn = document.getElementById('btn-layer-' + layer);
+            activeBtn.style.transform = 'scale(1.02)';
+            activeBtn.style.borderLeft = '4px solid #fff';
+
+            // Update details
+            const detailContainer = document.getElementById('layer-details');
+            detailContainer.innerHTML = `
+                <div class="fade-in">
+                    <h4 class="font-bold text-teal-700 mb-2">${earthData[layer].title}</h4>
+                    <p class="text-sm text-slate-600">${earthData[layer].desc}</p>
+                </div>
+            `;
+        }
+
+        // Chart.js Initialization (Atmosfer)
+        function initAtmosphereChart() {
+            const ctx = document.getElementById('atmosphereChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Troposfer (Cuaca)', 'Stratosfer (Ozon)', 'Mesosfer (Meteor)', 'Termosfer (Aurora)', 'Eksosfer (Satelit)'],
+                    datasets: [{
+                        label: 'Ketinggian Maksimal (km)',
+                        data: [12, 50, 85, 600, 1000], // 1000 used to represent >600 visually
+                        backgroundColor: [
+                            'rgba(14, 165, 233, 0.6)', // sky-500
+                            'rgba(56, 189, 248, 0.6)', // sky-400
+                            'rgba(125, 211, 252, 0.6)', // sky-300
+                            'rgba(29, 78, 216, 0.6)',  // blue-700 (space transition)
+                            'rgba(30, 58, 138, 0.8)'   // blue-900 (space)
+                        ],
+                        borderColor: [
+                            'rgba(14, 165, 233, 1)',
+                            'rgba(56, 189, 248, 1)',
+                            'rgba(125, 211, 252, 1)',
+                            'rgba(29, 78, 216, 1)',
+                            'rgba(30, 58, 138, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // CRITICAL: allows canvas to stretch within constrained parent div
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let val = context.raw;
+                                    if(val === 1000) return ' > 600 km (Batas luar angkasa)';
+                                    return ` Hingga ~${val} km`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Ketinggian dari Permukaan (km)' },
+                            type: 'logarithmic' // Logarithmic scale because values jump from 12 to 600
+                        }
+                    }
+                }
+            });
+        }
+
+        // Init setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure first tab is active visually (handled in HTML defaults, but this confirms)
+            const firstBtn = document.querySelector('.tab-btn');
+            if(firstBtn) firstBtn.style.borderBottom = "4px solid #2563eb";
+        });
+    </script>
+</body>
+</html>
